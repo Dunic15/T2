@@ -11,6 +11,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Para utilizar un mapa y generar el archivo de salida para el visualizador:
+% clingo maps/piece/(...)/mapX.lp solution.lp | python process.py
+
+% Esto generara un archivo output.txt que puede ser visualizado en el visualizador (DCChess.html).
+
 % -------------------------------------------------------------------------------------------
 % ------------------------------ KING'S ACTIONS (REY JUGADOR) -------------------------------
 % -------------------------------------------------------------------------------------------
