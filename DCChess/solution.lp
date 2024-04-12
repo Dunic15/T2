@@ -54,9 +54,26 @@ pieceOn(X+1,Y-1,T+1) : exec(downright, T), able(X+1,Y-1)
 % Acciones del caballo.
 % [IMPLEMENTAR]
 
+knightAction(moveUpLeft).      % 2 arriba y 1 izquierda
+knightAction(moveUpRight).     % 2 arriba y 1 derecha
+knightAction(moveDownLeft).    % 2 abajo y 1 izquierda
+knightAction(moveDownRight).   % 2 abajo y 1 derecha
+knightAction(moveLeftUp).      % 1 izquierda y 2 arriba
+knightAction(moveLeftDown).    % 1 izquierda y 2 abajo
+knightAction(moveRightUp).     % 1 derecha y 2 arriba
+knightAction(moveRightDown).   % 1 derecha y 2 abajo
+
 % Movimientos caballo
 % [IMPLEMENTAR]
-
+1 {pieceOn(X-1,Y+2,T+1) : exec(moveUpLeft, T), able(X-1,Y+2);
+   pieceOn(X+1,Y+2,T+1) : exec(moveUpRight, T), able(X+1,Y+2);
+   pieceOn(X-1,Y-2,T+1) : exec(moveDownLeft, T), able(X-1,Y-2);
+   pieceOn(X+1,Y-2,T+1) : exec(moveDownRight, T), able(X+1,Y-2);
+   pieceOn(X-2,Y+1,T+1) : exec(moveLeftUp, T), able(X-2,Y+1);
+   pieceOn(X-2,Y-1,T+1) : exec(moveLeftDown, T), able(X-2,Y-1);
+   pieceOn(X+2,Y+1,T+1) : exec(moveRightUp, T), able(X+2,Y+1);
+   pieceOn(X+2,Y-1,T+1) : exec(moveRightDown, T), able(X+2,Y-1)
+} 1 :- piece(knight), pieceOn(X,Y,T), not done(T).
 % -------------------------------------------------------------------------------------------
 % ---------------------------------- PAWN'S BLOCKS (PEON) -----------------------------------
 % -------------------------------------------------------------------------------------------
@@ -114,7 +131,39 @@ blocked(X,Y) :- attack_line(X,Y,I), not end_attack_line(X,Y,I).
 
 % Down left
 % [IMPLEMENTAR]
-% (...)
+% % Diagonal Down Left
+bishop_attack_dl(X-D,Y-D,I) :- bishop(X,Y,I), D = 1..c, square(X-D,Y-D).
+attack_line(X,Y,I) :- bishop_attack_dl(X,Y,I).
+end_attack_line(X-D,Y-D,I) :- knight(X,Y), bishop_attack_dl(X,Y,I), square(X-D,Y-D), D = 1..c.
+end_attack_line(X-D,Y-D,I) :- pawn(X,Y), bishop_attack_dl(X,Y,I), square(X-D,Y-D), D = 1..c.
+end_attack_line(X-D,Y-D,I) :- bishop(X,Y,I2), bishop_attack_dl(X,Y,I), square(X-D,Y-D), D = 1..c.
+
+% Diagonal Down Right
+bishop_attack_dr(X+D,Y-D,I) :- bishop(X,Y,I), D = 1..c, square(X+D,Y-D).
+attack_line(X,Y,I) :- bishop_attack_dr(X,Y,I).
+end_attack_line(X+D,Y-D,I) :- knight(X,Y), bishop_attack_dr(X,Y,I), square(X+D,Y-D), D = 1..c.
+end_attack_line(X+D,Y-D,I) :- pawn(X,Y), bishop_attack_dr(X,Y,I), square(X+D,Y-D), D = 1..c.
+end_attack_line(X+D,Y-D,I) :- bishop(X,Y,I2), bishop_attack_dr(X,Y,I), square(X+D,Y-D), D = 1..c.
+
+% Diagonal Up Left
+bishop_attack_ul(X-D,Y+D,I) :- bishop(X,Y,I), D = 1..c, square(X-D,Y+D).
+attack_line(X,Y,I) :- bishop_attack_ul(X,Y,I).
+end_attack_line(X-D,Y+D,I) :- knight(X,Y), bishop_attack_ul(X,Y,I), square(X-D,Y+D), D = 1..c.
+end_attack_line(X-D,Y+D,I) :- pawn(X,Y), bishop_attack_ul(X,Y,I), square(X-D,Y+D), D = 1..c.
+end_attack_line(X-D,Y+D,I) :- bishop(X,Y,I2), bishop_attack_ul(X,Y,I), square(X-D,Y+D), D = 1..c.
+
+% Diagonal Up Right
+bishop_attack_ur(X+D,Y+D,I) :- bishop(X,Y,I), D = 1..c, square(X+D,Y+D).
+attack_line(X,Y,I) :- bishop_attack_ur(X,Y,I).
+end_attack_line(X+D,Y+D,I) :- knight(X,Y), bishop_attack_ur(X,Y,I), square(X+D,Y+D), D = 1..c.
+end_attack_line(X+D,Y+D,I) :- pawn(X,Y), bishop_attack_ur(X,Y,I), square(X+D,Y+D), D = 1..c.
+end_attack_line(X+D,Y+D,I) :- bishop(X,Y,I2), bishop_attack_ur(X,Y,I), square(X+D,Y+D), D = 1..c.
+
+% Presence
+blocked(X,Y) :- bishop(X,Y,I), square(X,Y).
+
+% Blocked by attack line
+blocked(X,Y) :- attack_line(X,Y,I), not end_attack_line(X,Y,I).
 
 % -------------------------------------------------------------------------------------------
 % -------------------------------- KNIGHT'S BLOCKS (CABALLO) --------------------------------
@@ -122,7 +171,23 @@ blocked(X,Y) :- attack_line(X,Y,I), not end_attack_line(X,Y,I).
 
 % Down left
 % [IMPLEMENTAR]
-% (...)
+% % Movement in "L" shape and blocked positions by the knight
+% 2 Up and 1 Left
+blocked(X-1,Y+2) :- knight(X,Y), square(X-1,Y+2).
+% 2 Up and 1 Right
+blocked(X+1,Y+2) :- knight(X,Y), square(X+1,Y+2).
+% 2 Down and 1 Left
+blocked(X-1,Y-2) :- knight(X,Y), square(X-1,Y-2).
+% 2 Down and 1 Right
+blocked(X+1,Y-2) :- knight(X,Y), square(X+1,Y-2).
+% 1 Up and 2 Left
+blocked(X-2,Y+1) :- knight(X,Y), square(X-2,Y+1).
+% 1 Up and 2 Right
+blocked(X+2,Y+1) :- knight(X,Y), square(X+2,Y+1).
+% 1 Down and 2 Left
+blocked(X-2,Y-1) :- knight(X,Y), square(X-2,Y-1).
+% 1 Down and 2 Right
+blocked(X+2,Y-1) :- knight(X,Y), square(X+2,Y-1).
 
 % -------------------------------------------------------------------------------------------
 % ----------------------------------- REGLAS GENERALES --------------------------------------
@@ -149,4 +214,6 @@ done(T) :- done(X,Y,T).
 #show rook/3.
 #show pieceOn/3.
 #show piece/1.
+#show blocked/2.
+
 #show blocked/2.
